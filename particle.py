@@ -19,7 +19,7 @@ magnitude = cv2.normalize(magnitude, None, 0, 1, cv2.NORM_MINMAX)
 dx, dy = cv2.polarToCart(magnitude, angle)
 
 # Init Particle
-spacing = 25
+spacing = 100
 trails = []
 for x in range(0,dx.shape[1], spacing):
    for y in range(0,dy.shape[0], spacing):
@@ -46,31 +46,33 @@ def polyline_length(line):
 
 lengths = np.array([polyline_length(trail) for trail in trails])
 sizes = lengths * (1/lengths.max())
+
+sorted_trails = sorted(zip(trails, sizes), key= lambda x: x[1], reverse=False)
 final = []
-good_only = frame.copy()
+
 # TODO: Make Not terrible
-for trail, size in sorted(zip(trails, sizes), key= lambda x: x[1], reverse=False):
+for trail, size in sorted_trails:
     trail = np.array(trail, dtype=np.int32)
     cv2.circle(frame, tuple(trail[0].astype(int)), 3, (0,255,0), -1)
     cv2.circle(frame, tuple(trail[-1].astype(int)), 3, (0,0,255), -1)
     try:
         if size > .5:
             color = (0, int(size*255), 255)
-            good_only = cv2.polylines(good_only, [trail], 
-                            False, color, int(size * 10) if int(size * 10) != 0 else 1 )
             final.append(trail)
         else:
             color = (255, int(size*255), 0)
 
         trail = trail.reshape((-1, 1, 2))
         frame = cv2.polylines(frame, [trail], 
-                            False, color, int(size * 10) if int(size * 10) != 0 else 1 )
+                            False, color, int(size * spacing) if int(size * spacing) != 0 else 1 )
     except Exception as e:
         print(e)
 
-
+good_only = frame.copy()
 mask = np.zeros_like(frame)
 for trail in final:
+    good_only = cv2.polylines(good_only, [trail], 
+                            False, color, int(size * 10) if int(size * 10) != 0 else 1 )
     cv2.circle(mask, tuple(trail[0].astype(int)), 1+(spacing//2), (0,255,0), -1)
     cv2.circle(mask, tuple(trail[-1].astype(int)), 1+(spacing//2), (0,0,255), -1)
 
@@ -89,7 +91,7 @@ if len(contours) != 0:
     # find the biggest countour (c) by the area
     c = max(contours, key = cv2.contourArea)
 
-    x,y,w,h = cv2.boundingRect(c)
+    x,y,w,h = start = cv2.boundingRect(c)
     # draw the biggest contour (c) in green
     cv2.rectangle(show_image,(x,y),(x+w,y+h),(0,255,0),5)
 
@@ -102,10 +104,13 @@ if len(contours) != 0:
     # find the biggest countour (c) by the area
     c = max(contours, key = cv2.contourArea)
     
-    x,y,w,h = cv2.boundingRect(c)
+    x,y,w,h = stop = cv2.boundingRect(c)
     # draw the biggest contour (c) in green
     cv2.rectangle(show_image,(x,y),(x+w,y+h),(0,0,255),5)
-    
+with open('stop-box.npy', 'wb') as f:
+    np.save(f, stop)
+with open('start-box.npy', 'wb') as f:
+    np.save(f, start)
 cv2.imwrite('start-stop-mask.png', mask)
 cv2.imwrite('good-only.png', good_only)
 cv2.imwrite('start-stop-final.png', np.hstack((good_only, mask, show_image)))

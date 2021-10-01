@@ -31,7 +31,11 @@ In order to get around this problem we normalize optical flow over several minut
 
 <img src="docs/images/current-combined.png">
 
-```This image can be genrerated while only tracking the motion of people throughout the frame, but the performance hasn't been significantly improved in my testing while also being slower and more sensitive in areas with occlusions so I haven't bothered with it here.```
+```Box: Starbucks Streams/2021_09_18-04/20/23_PM_to_2021_09_18-04/35/23_PM.mp4```
+
+```
+This image can be genrerated while only tracking the motion of people throughout the frame, but the performance hasn't been significantly improved in my testing while also being slower and more sensitive in areas with occlusions so I haven't bothered with it here.
+```
 
 In order to better leverage frame by frame motion we've discarded or ability to associate motion over the long term and have no idea of the actual path a person in frame might travel. So to get that back once we have this normalized optical flow image we treat it as a displacement field. This just meaning that for a point traveling through our field at any step t_n the position of the particle at t_n+1 is equal to the position_n + field[position_n].
 
