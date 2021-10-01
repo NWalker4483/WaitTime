@@ -14,7 +14,7 @@
 The amount of time it takes to get through a line is highly dependent on the amount of people in it but since the scenes are often full of people who are not waiting for the line and act as noise to the wait time problem. In order to effectively estimate how many people are in line we need a good measure where exactly this line is.
 
 ### Who's Left:
-Somewhat related to the previous problem a queues wait time is not just dependent on how many people are in line but on how long it's taking people to complete their task once they've reached the target location. So in order to effectively estimate the wait time we need some measure of how long it's taking people to exit target location.
+Somewhat related to the previous problem a queues wait time is not just dependent on how many people are in line but on how long it's taking people to complete their task once they've reached the target location. So in order to effectively estimate the wait time we need some measure of how long it's taking people to exit the target location.
 
 ## Current Solutions in Code:
 ### What Line?:
@@ -47,6 +47,6 @@ Once the most prominent paths have been extracted for a scene we can use the fir
 
 <img src="docs/images/start-stop-final.png">
 
-As a person detection passes through the start region with significant overlap we count that as a person who has entered the line and then the reverse for the stopping regions and exiting the line. 
+As a person detection passes through the start region with significant overlap we count that as a person who has entered the line and then the reverse for the stopping regions and exiting the line. This shortens the area in which we need to maintain an individuals identity and allows us to keep an estimate of how many people are in line.
 
 By tracking the amount of time between people exiting the stopping region its possible to get a good measure of how long it's taking people to complete their tasks. This combined with an estimate of how many people have entered the line previously we're able to estimate wait times.
