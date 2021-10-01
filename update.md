@@ -21,7 +21,7 @@ Somewhat related to the previous problem a queues wait time is not just dependen
 
 For this problem since we assume that the queues path doesn't change significantly over time. I've decided to simplify a queue to a region of regular motion. If individuals in a section of the frame tend to move forward and to the right we assume that the queue also follows that path since it holds the greatest influence over the most people in view.
 
-While it would be useful to track each individuals path throughout the frame using current tools it is difficult to maintain a persons identity detection through the queue. Crowded scenes like these are particularly difficult for re-identification algorithms as they contain irregular motion, full/partial occlusions and often people with similar appearances. 
+While it would be useful to track each individuals path throughout the frame using current tools it is difficult to maintain a persons identity throughout the entire queue. Crowded scenes like these are particularly difficult for re-identification algorithms as they contain irregular motion, full/partial occlusions and often people with similar appearances. 
 
 <img src="docs/images/edge.png">
 
@@ -31,9 +31,9 @@ In order to get around this problem we normalize optical flow over several minut
 
 <img src="docs/images/current-combined.png">
 
-```This image can be genrerated while only tracking the motion of people throughout the frame, but the performance hasn't been significantly improved in my testing while also being slower and more sensitive to partial occlusions area so I haven't bothered with it here.```
+```This image can be genrerated while only tracking the motion of people throughout the frame, but the performance hasn't been significantly improved in my testing while also being slower and more sensitive in areas with occlusions so I haven't bothered with it here.```
 
-In order to better leverage frame by frame motion we've discarded or ability to associate motion over the long term and have no idea of the actual path a person in frame might travel. So to get that back once we have this normalized optical flow image we treat it as a velocity field. This just meaning that for a point traveling through our field at any step t_n the position of the particle at t_n+1 is equal to the position_n + field[position_n].
+In order to better leverage frame by frame motion we've discarded or ability to associate motion over the long term and have no idea of the actual path a person in frame might travel. So to get that back once we have this normalized optical flow image we treat it as a displacement field. This just meaning that for a point traveling through our field at any step t_n the position of the particle at t_n+1 is equal to the position_n + field[position_n].
 
 By evenly distributing starting points throughout the field and sorting by their end length we’re able to get a measure of where the largest queue starts and stops.
 
